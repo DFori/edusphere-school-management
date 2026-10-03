@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduSphere — Multi-Tenant School Management & Academic Assessment Platform</title>
+  <meta name="description" content="Enterprise multi-tenant school administration, automated grading, continuous assessment, attendance, and fee management platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Background Glow -->
+  <div class="glow-orb orb-indigo"></div>
+  <div class="glow-orb orb-cyan"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+        </div>
+        <div class="brand-meta">
+          <span class="brand-name">EDUSPHERE</span>
+          <span class="brand-tag">MULTI-TENANT ACADEMIC OS</span>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <!-- School Tenant Switcher -->
+        <div class="control-group">
+          <label for="select-school" class="control-label">School Tenant</label>
+          <select id="select-school" class="custom-select">
+            <option value="">Loading institutions...</option>
+          </select>
+        </div>
+
+        <!-- Role Switcher -->
+        <div class="control-group">
+          <label for="select-role" class="control-label">Active Role</label>
+          <select id="select-role" class="custom-select">
+            <option value="SUPER_ADMIN">Administrator (Full Access)</option>
+            <option value="TEACHER">Teacher (Grading & Attendance)</option>
+            <option value="ACCOUNTANT">Accountant (Fees & Invoices)</option>
+            <option value="PARENT">Parent / Student (Report View)</option>
+          </select>
+        </div>
+
+        <button id="btn-enroll-student" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Enroll Student
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="dashboard-container">
+    <!-- Top System Banner -->
+    <div class="tenant-banner glass-card">
+      <div class="tenant-info">
+        <div class="tenant-flag" id="school-flag">🏫</div>
+        <div>
+          <h1 class="tenant-title" id="school-display-name">St. Jude Academy</h1>
+          <p class="tenant-subtitle" id="school-display-code">Tenant ID: SJA • Base Currency: USD ($)</p>
+        </div>
+      </div>
+      <div class="term-status-badge">
+        <span class="pulse-indicator"></span>
+        <span id="active-term-badge">2025/2026 Academic Session • First Term (Active)</span>
+      </div>
+    </div>
+
+    <!-- Academic KPI Grid -->
+    <section class="kpi-grid">
+      <div class="glass-card kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Enrolled Students</span>
+          <span class="badge badge-indigo">Class Roster</span>
+        </div>
+        <div class="kpi-val" id="kpi-total-students">0</div>
+        <div class="kpi-sub">Across active class arms</div>
+      </div>
+
+      <div class="glass-card kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">School-Wide Average GPA</span>
+          <span class="badge badge-emerald">Academic Health</span>
+        </div>
+        <div class="kpi-val text-emerald" id="kpi-avg-gpa">0.00</div>
+        <div class="kpi-sub">Weighted on standard 4.0 scale</div>
+      </div>
+
+      <div class="glass-card kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Fee Collection Rate</span>
+          <span class="badge badge-cyan">Revenue Ledger</span>
+        </div>
+        <div class="kpi-val text-cyan" id="kpi-fee-collection">0%</div>
+        <div class="kpi-sub" id="kpi-fee-sub">Settled vs Invoiced</div>
+      </div>
+
+      <div class="glass-card kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Average Attendance</span>
+          <span class="badge badge-amber">Compliance</span>
+        </div>
+        <div class="kpi-val text-amber" id="kpi-attendance-rate">0%</div>
+        <div class="kpi-sub">Recorded school days</div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-bar">
+      <button class="tab-btn active" data-tab="tab-gradebook">Interactive Gradebook</button>
+      <button class="tab-btn" data-tab="tab-report-card">Student Report Card & Transcript</button>
+      <button class="tab-btn" data-tab="tab-fees">Fee Invoices & Ledger</button>
+      <button class="tab-btn" data-tab="tab-attendance">Attendance Register</button>
+      <button class="tab-btn" data-tab="tab-audit">Grade Audit Log</button>
+    </div>
+
+    <!-- TAB 1: Gradebook & Continuous Assessment -->
+    <section id="tab-gradebook" class="tab-content active">
+      <div class="dashboard-grid">
+        <!-- Score Recording Panel -->
+        <div class="glass-card panel">
+          <div class="panel-header">
+            <div>
+              <h3>Continuous Assessment & Exam Grading</h3>
+              <span class="panel-subtitle">Weights: CA1 (15%), CA2 (15%), Assignment (10%), Exam (60%)</span>
+            </div>
+            <div class="selector-row">
+              <select id="grade-class-select" class="custom-select-sm"></select>
+              <select id="grade-subject-select" class="custom-select-sm"></select>
+            </div>
+          </div>
+
+          <form id="form-record-grade" class="grade-form">
+            <div class="form-row-grid">
+              <div class="form-group">
+                <label for="grade-student-select">Select Student</label>
+                <select id="grade-student-select" class="custom-select" required></select>
+              </div>
+              <div class="form-group">
+                <label for="score-ca1">CA 1 (Max 15)</label>
+                <input type="number" id="score-ca1" min="0" max="15" step="0.5" value="14" required>
+              </div>
+              <div class="form-group">
+                <label for="score-ca2">CA 2 (Max 15)</label>
+                <input type="number" id="score-ca2" min="0" max="15" step="0.5" value="13" required>
+              </div>
+              <div class="form-group">
+                <label for="score-assignment">Assignment (Max 10)</label>
+                <input type="number" id="score-assignment" min="0" max="10" step="0.5" value="9" required>
+              </div>
+              <div class="form-group">
+                <label for="score-exam">Exam (Max 60)</label>
+                <input type="number" id="score-exam" min="0" max="60" step="0.5" value="52" required>
+              </div>
+            </div>
+
+            <!-- Live Grade Preview Pill -->
+            <div class="grade-preview-banner" id="grade-live-preview">
+              <span>Calculated Total: <strong>88.0 / 100</strong></span>
+              <span class="badge badge-emerald">Grade A (4.0 GPA) — Excellent</span>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+              <label for="score-reason">Adjustment Reason (Required if updating existing score)</label>
+              <input type="text" id="score-reason" placeholder="e.g. Script remarking approved by HOD">
+            </div>
+
+            <div class="panel-actions">
+              <button type="submit" class="btn btn-primary" id="btn-save-grade">Save Assessment Score</button>
+            </div>
+          </form>
+
+          <!-- Class Sheet Table -->
+          <div class="table-container" style="margin-top: 1.5rem;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Admission No</th>
+                  <th>CA 1 (15)</th>
+                  <th>CA 2 (15)</th>
+                  <th>Assign (10)</th>
+                  <th>Exam (60)</th>
+                  <th>Total (100)</th>
+                  <th>Grade</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="grade-table-body">
+                <tr><td colspan="9" class="empty-state">Select class and subject to view recorded grades.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Student Report Card & Transcript -->
+    <section id="tab-report-card" class="tab-content">
+      <div class="glass-card panel report-card-wrapper">
+        <div class="panel-header-with-action">
+          <div>
+            <h3>Official Terminal Academic Report Card</h3>
+            <span class="panel-subtitle">Comprehensive terminal transcript with class rank, GPA & principal remark</span>
+          </div>
+          <div class="selector-row">
+            <select id="report-student-select" class="custom-select-sm"></select>
+            <button id="btn-print-report" class="btn btn-secondary">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print / PDF
+            </button>
+          </div>
+        </div>
+
+        <div id="report-card-container">
+          <div class="empty-state">Select a student to render official report card.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Fee Invoices & Ledger -->
+    <section id="tab-fees" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="glass-card panel">
+          <div class="panel-header-with-action">
+            <div>
+              <h3>Tuition & Term Fee Ledger</h3>
+              <span class="panel-subtitle">Minor integer unit calculations (cents / kobo)</span>
+            </div>
+            <button id="btn-new-fee-schedule" class="btn btn-secondary">New Fee Schedule</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Invoice ID</th>
+                  <th>Term</th>
+                  <th>Total Billed</th>
+                  <th>Amount Paid</th>
+                  <th>Balance Due</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="invoices-table-body">
+                <tr><td colspan="8" class="empty-state">Loading invoices...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Attendance Register -->
+    <section id="tab-attendance" class="tab-content">
+      <div class="glass-card panel">
+        <div class="panel-header-with-action">
+          <div>
+            <h3>Daily Class Attendance Register</h3>
+            <span class="panel-subtitle">Mark and track pupil presence</span>
+          </div>
+          <div class="selector-row">
+            <select id="att-class-select" class="custom-select-sm"></select>
+            <input type="date" id="att-date-input" class="custom-select-sm">
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Admission No</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-table-body">
+              <tr><td colspan="4" class="empty-state">Select a class and date to mark attendance.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: Grade Audit Log -->
+    <section id="tab-audit" class="tab-content">
+      <div class="glass-card panel">
+        <div class="panel-header">
+          <h3>Academic Score Modification Audit Trail</h3>
+          <span class="panel-subtitle">Append-only compliance log of score alterations</span>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Student ID</th>
+                <th>Subject</th>
+                <th>Previous Total</th>
+                <th>New Total</th>
+                <th>Modified By</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <tr><td colspan="7" class="empty-state">No score modifications recorded.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: Enroll Student -->
+  <div id="modal-enroll" class="modal-overlay hidden">
+    <div class="glass-card modal-box">
+      <div class="modal-header">
+        <h3>Enroll New Student</h3>
+        <button id="btn-close-enroll" class="close-btn">&times;</button>
+      </div>
+      <form id="form-enroll-student" class="modal-form">
+        <div class="form-group">
+          <label for="enroll-adm-no">Admission Number</label>
+          <input type="text" id="enroll-adm-no" placeholder="e.g. SJA/2025/104" required>
+        </div>
+        <div class="form-group">
+          <label for="enroll-name">Student Full Name</label>
+          <input type="text" id="enroll-name" placeholder="e.g. Benjamin Hayes" required>
+        </div>
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="enroll-gender">Gender</label>
+            <select id="enroll-gender" class="custom-select">
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="enroll-class">Assigned Class</label>
+            <select id="enroll-class" class="custom-select" required></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="enroll-guardian-name">Guardian / Parent Name</label>
+          <input type="text" id="enroll-guardian-name" placeholder="e.g. Sarah Hayes" required>
+        </div>
+        <div class="form-row-grid">
+          <div class="form-group">
+            <label for="enroll-guardian-email">Guardian Email</label>
+            <input type="email" id="enroll-guardian-email" placeholder="sarah.hayes@example.com" required>
+          </div>
+          <div class="form-group">
+            <label for="enroll-guardian-phone">Guardian Phone</label>
+            <input type="tel" id="enroll-guardian-phone" placeholder="+1 555-0144" required>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-enroll" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Complete Enrollment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Record Payment -->
+  <div id="modal-pay" class="modal-overlay hidden">
+    <div class="glass-card modal-box">
+      <div class="modal-header">
+        <h3>Record Fee Payment</h3>
+        <button id="btn-close-pay" class="close-btn">&times;</button>
+      </div>
+      <form id="form-pay-fee" class="modal-form">
+        <input type="hidden" id="pay-invoice-id">
+        <div class="form-group">
+          <label>Invoice ID</label>
+          <input type="text" id="pay-invoice-display" readonly>
+        </div>
+        <div class="form-group">
+          <label for="pay-amount">Payment Amount ($ / Major Units)</label>
+          <input type="number" id="pay-amount" step="0.01" min="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="pay-method">Payment Method</label>
+          <select id="pay-method" class="custom-select">
+            <option value="BANK_TRANSFER">Direct Bank Transfer</option>
+            <option value="CARD">Debit / Credit Card</option>
+            <option value="CASH">Cash</option>
+            <option value="CHEQUE">Cheque</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-pay" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Process Receipt</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
